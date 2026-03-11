@@ -28,7 +28,7 @@ public class CategoryController {
         }
     }
 
-    @PostMapping("/add/category")
+    @PostMapping("/add")
     public ResponseEntity<ApiResponse> addCategory(@RequestBody Category category) {
         try {
             Category theCategory = categoryService.addCategory(category);
@@ -38,23 +38,44 @@ public class CategoryController {
         }
     }
 
-    @GetMapping("/category/{id}/category")
-    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id) {
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long categoryId) {
         try {
-            Category theCategory = categoryService.getCategoryById(id);
+            Category theCategory = categoryService.getCategoryById(categoryId);
             return ResponseEntity.ok(new ApiResponse("Found!", theCategory));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error!", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), e.getMessage()));
         }
     }
 
-    @GetMapping("/{name}/category")
+    @GetMapping("/category/{name}")
     public ResponseEntity<ApiResponse> getCategoryByName(@PathVariable String name) {
         try {
             Category theCategory = categoryService.getCategoryByName(name);
             return ResponseEntity.ok(new ApiResponse("Found!", theCategory));
         } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("Error!", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId) {
+        try {
+            categoryService.deleteCategoryById(categoryId);
+            return ResponseEntity.ok(new ApiResponse("Found!", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), e.getMessage()));
+        }
+    }
+
+
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long categoryId, @RequestBody Category category) {
+        try {
+            Category updateCategory = categoryService.updateCategory(category, categoryId);
+            return ResponseEntity.ok(new ApiResponse("Update success!", null));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), e.getMessage()));
         }
     }
 }

@@ -4,7 +4,7 @@ import com.dailyproject.dreamshops.dto.ImageDto;
 import com.dailyproject.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailyproject.dreamshops.model.Image;
 import com.dailyproject.dreamshops.model.Product;
-import com.dailyproject.dreamshops.repository.ImageRepository;
+import com.dailyproject.dreamshops.repository.IImageRepository;
 import com.dailyproject.dreamshops.service.product.IProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,19 +19,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ImageService implements IImageService {
-    private final ImageRepository imageRepository;
+    private final IImageRepository IImageRepository;
     private final IProductService productService;
 
     @Override
     public Image getImageById(long id) {
-        return imageRepository.findById(id)
+        return IImageRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Image not found: " + id));
     }
 
     @Override
     public void deleteImageById(long id) {
-        imageRepository.findById(id)
-                .ifPresentOrElse(imageRepository::delete, () -> imageRepository.deleteById(id));
+        IImageRepository.findById(id)
+                .ifPresentOrElse(IImageRepository::delete, () -> IImageRepository.deleteById(id));
     }
 
     @Override
@@ -51,9 +51,9 @@ public class ImageService implements IImageService {
                 String downloadUrl = buildDownloadUrl + image.getId();
                 image.setDownloadUrl(downloadUrl);
 
-                Image savedImage = imageRepository.save(image);
+                Image savedImage = IImageRepository.save(image);
                 savedImage.setDownloadUrl(buildDownloadUrl + savedImage.getId());
-                imageRepository.save(savedImage);
+                IImageRepository.save(savedImage);
 
                 ImageDto imageDto = new ImageDto();
                 imageDto.setImageId(savedImage.getId());
@@ -76,7 +76,7 @@ public class ImageService implements IImageService {
             image.setFileName(file.getOriginalFilename());
             image.setFileType(file.getContentType());
             image.setImage(new SerialBlob(file.getBytes()));
-            imageRepository.save(image);
+            IImageRepository.save(image);
         } catch (IOException | SQLException e) {
             throw new RuntimeException(e.getMessage());
         }
