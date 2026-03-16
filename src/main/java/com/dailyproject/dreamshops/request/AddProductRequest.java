@@ -1,6 +1,5 @@
 package com.dailyproject.dreamshops.request;
 
-import com.dailyproject.dreamshops.model.Category;
 import com.dailyproject.dreamshops.model.Image;
 import lombok.Data;
 

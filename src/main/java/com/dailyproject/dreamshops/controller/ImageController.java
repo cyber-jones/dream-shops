@@ -5,7 +5,6 @@ import com.dailyproject.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailyproject.dreamshops.model.Image;
 import com.dailyproject.dreamshops.response.ApiResponse;
 import com.dailyproject.dreamshops.service.image.IImageService;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
