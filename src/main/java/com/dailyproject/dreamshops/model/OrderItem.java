@@ -1,6 +1,7 @@
 package com.dailyproject.dreamshops.model;
 
 import java.math.BigDecimal;
+
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import lombok.Setter;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     private int quantity;
     private BigDecimal unitPrice;
 

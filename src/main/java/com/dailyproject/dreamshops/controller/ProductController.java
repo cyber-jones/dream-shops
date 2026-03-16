@@ -1,6 +1,7 @@
 package com.dailyproject.dreamshops.controller;
 
 import com.dailyproject.dreamshops.dto.ProductDto;
+import com.dailyproject.dreamshops.exceptions.AlreadyExistsException;
 import com.dailyproject.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailyproject.dreamshops.model.Product;
 import com.dailyproject.dreamshops.request.AddProductRequest;
@@ -43,8 +44,8 @@ public class ProductController {
         try {
             Product theProduct = productService.addProduct(request);
             return   ResponseEntity.ok(new ApiResponse("Product added successfully", theProduct));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
+        } catch (AlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage(), null));
         }
     }
 

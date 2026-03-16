@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.dailyproject.dreamshops.dto.OrderDto;
 import com.dailyproject.dreamshops.enums.OrderStatus;
 import com.dailyproject.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailyproject.dreamshops.model.Cart;
@@ -25,6 +27,7 @@ public class OrderService implements IOrderService {
     private final IOrderRepositotry orderRepository;
     private final IProductRepository productRepository;
     private final ICartService cartService;
+    private final ModelMapper modelMapper;
 
     @Override
     public Order placeOrder(Long userId) {
@@ -40,17 +43,16 @@ public class OrderService implements IOrderService {
 
         return savedOrder;
     }
-
+    
     @Override
-    public Order getOrderById(Long orderId) {
-        return orderRepository.findById(orderId)
+    public OrderDto getOrderById(Long orderId) {
+        return orderRepository.findById(orderId).map(this::convertToDto)
             .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
     }
 
     @Override
-    public Order getUseOrder(Long userId) {
-        return orderRepository.findByUserId(userId)
-            .orElseThrow(() -> new ResourceNotFoundException("Order not found for user id: " + userId));
+    public List<OrderDto> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId).stream().map(this::convertToDto).toList();
     }
 
     private BigDecimal calculateTotalAmount(List<OrderItem> orderItems) {
@@ -77,4 +79,8 @@ public class OrderService implements IOrderService {
             }).toList();
     }
 
+    @Override
+    public OrderDto convertToDto(Order order) {
+        return modelMapper.map(order, OrderDto.class);
+    }
 }

@@ -73,7 +73,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse> updateCategory(@PathVariable Long categoryId, @RequestBody Category category) {
         try {
             Category updateCategory = categoryService.updateCategory(category, categoryId);
-            return ResponseEntity.ok(new ApiResponse("Update success!", null));
+            return ResponseEntity.ok(new ApiResponse("Update success!", updateCategory));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), e.getMessage()));
         }

@@ -3,6 +3,7 @@ package com.dailyproject.dreamshops.service.cart;
 import com.dailyproject.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailyproject.dreamshops.model.Cart;
 import com.dailyproject.dreamshops.model.CartItem;
+import com.dailyproject.dreamshops.model.User;
 import com.dailyproject.dreamshops.repository.ICartItemRepository;
 import com.dailyproject.dreamshops.repository.ICartRepository;
 import jakarta.transaction.Transactional;
@@ -10,14 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CartService implements ICartService {
     private final ICartRepository cartRepository;
     private final ICartItemRepository cartItemRepository;
-    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
     @Override
     public Cart getCart(Long id) {
@@ -48,14 +48,18 @@ public class CartService implements ICartService {
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        return cartRepository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+        return Optional.ofNullable(getCartByUserId(user.getId()))   
+            .orElseGet(()-> {
+                Cart newCart = new Cart();
+                newCart.setUser(user);
+                return cartRepository.save(newCart);
+            });
     }
 
     @Override
     public Cart getCartByUserId(Long userId) {
         return cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cart not found for user id: " + userId));
+                .orElse(null);
     }
 }
