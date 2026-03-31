@@ -3,6 +3,7 @@ package com.dailyproject.dreamshops.service.user;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.dailyproject.dreamshops.dto.UserDto;
@@ -12,6 +13,8 @@ import com.dailyproject.dreamshops.model.User;
 import com.dailyproject.dreamshops.repository.IUserRepository;
 import com.dailyproject.dreamshops.request.CreateUserRequest;
 import com.dailyproject.dreamshops.request.UpdateUserRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements IUserService {
     private final ModelMapper modelMapper;
     private final IUserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public User getUserById(Long userId) {
@@ -36,7 +40,7 @@ public class UserService implements IUserService {
                 user.setFirstName(req.getFirstName());
                 user.setLastName(req.getLastName());
                 user.setEmail(req.getEmail());
-                user.setPassword(req.getPassword());
+                user.setPassword(passwordEncoder.encode(req.getPassword()));
                 return userRepository.save(user);
             }).map(this::convertUserToDto)
             // .map(userRepository :: save) 
@@ -66,5 +70,15 @@ public class UserService implements IUserService {
     @Override
     public UserDto convertUserToDto(User user) {
         return modelMapper.map(user, UserDto.class);
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            return userRepository.findByEmail(email);
+        }
+        return null;
     }
 }
